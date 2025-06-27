@@ -48,9 +48,11 @@ export class ScoreService {
 
     if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
 
-    const address = await ScoreRepository.findScoreByID(id);
+    const result = await ScoreRepository.findScoreByID(id);
+    
+    if (!result) throw new APIError("Pontuação não encontrado.", 404);
 
-    return address;
+    return result;
   }
 
   static async alterScore(id: string, scoreData: Partial<CreateScoreData>): Promise<ViewScoreData> {

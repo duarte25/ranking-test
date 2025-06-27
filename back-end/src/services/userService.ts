@@ -48,9 +48,11 @@ export class UserService {
 
     if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
 
-    const address = await UserRepository.findUserByID(id);
+    const result = await UserRepository.findUserByID(id);
 
-    return address;
+    if (!result) throw new APIError("Usuário não encontrado.", 404);
+
+    return result;
   }
 
   static async alterUser(id: string, userData: Partial<CreateUserData>): Promise<ViewUserData> {
