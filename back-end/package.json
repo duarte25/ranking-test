@@ -1,0 +1,33 @@
+{
+  "name": "ranking-cooperador",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "build": "tsc",
+    "start": "tsx server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "validation-br": "^1.5.2"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.5.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.5.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^3.12.10",
+    "typescript": "^5.8.3"
+  }
+}

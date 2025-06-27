@@ -1,0 +1,53 @@
+import { ValidationFuncs as v, Validator } from "../utils/Validation";
+import { CreateUserData, ListUsersParams, ViewUserData } from "../interfaces/user";
+import { UserRepository } from "../repositories/UserRepository";
+import { APIError } from "../utils/wrapException";
+
+export class UserService {
+
+  static async listUsers(
+    params: ListUsersParams
+  ) {
+    const { pagina, limite } = params;
+
+    const where: Record<string, any> = {};
+
+    return await UserRepository.listUsers(where, {
+      page: pagina,
+      limit: limite,
+      customLabels: {
+        totalDocs: "resultados",
+        docs: "data",
+        limit: "limite",
+        page: "pagina",
+        totalPages: "totalPaginas",
+      },
+    });
+  }
+
+  static async createUser(userData: CreateUserData): Promise<ViewUserData> {
+
+    let val = new Validator(userData);
+    await val.validate("nome", v.required(), v.length({ min: 3, max: 100 }))
+    await val.validate("cargo", v.required(), v.length({ min: 3, max: 100 }))
+
+    await val.validate("foto_id", v.optional(), v.prismaUUID(), async (value: any) => {
+      return v.exists({ model: "imagem" })(value, { path: "id" });
+    });
+
+    if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
+
+    return await UserRepository.createUser(userData);
+  }
+
+  static async findUser(id: string) {
+
+    const uuidPrismaTest = await v.prismaUUID({ model: "usuario" })(id, { path: "id" });
+
+    if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
+
+    const address = await UserRepository.findUserByID(id);
+
+    return address;
+  }
+}

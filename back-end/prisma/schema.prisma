@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        String   @id @unique(map: "usuario_id_UNIQUE") @default(uuid()) @db.Uuid
+  nome      String   @db.VarChar(100)
+  cargo     String   @db.VarChar(100)
+  foto_id   String?  @db.Uuid
+  foto      Imagem?  @relation(fields: [foto_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_foto")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Imagem {
+  id        String    @id @unique(map: "imagem_id_UNIQUE") @default(uuid()) @db.Uuid
+  imagem    Bytes
+  tipo_mime String    @db.VarChar(20)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     Usuario[]
+}

@@ -1,0 +1,32 @@
+services:
+  banco-postgresql-ranking:
+    image: postgres:13
+    restart: unless-stopped
+    container_name: banco-postgresql-ranking
+    environment:
+      POSTGRES_PASSWORD: fslab
+      POSTGRES_DB: db_ranking
+      POSTGRES_USER: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - volume-sql:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # ranking-back:
+  #   build:
+  #     context: ./
+  #   container_name: integra-back
+  #   ports:
+  #     - "3020:3020"
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+volumes:
+  volume-sql:
+
+networks:
+  app-network:
+    driver: bridge
