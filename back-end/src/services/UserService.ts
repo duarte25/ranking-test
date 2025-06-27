@@ -37,7 +37,9 @@ export class UserService {
 
     if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
 
-    return await UserRepository.createUser(userData);
+    const sanitizedData = val.getSanitizedBody();
+
+    return await UserRepository.createUser(sanitizedData);
   }
 
   static async findUser(id: string) {
@@ -50,4 +52,23 @@ export class UserService {
 
     return address;
   }
+
+  static async alterUser(id: string, userData: Partial<CreateUserData>): Promise<ViewUserData> {
+
+    let val = new Validator(userData);
+
+    await val.validate("nome", v.optional(), v.length({ min: 3, max: 100 }))
+    await val.validate("cargo", v.optional(), v.length({ min: 3, max: 100 }))
+
+    await val.validate("foto_id", v.optional(), v.prismaUUID(), async (value: any) => {
+      return v.exists({ model: "imagem" })(value, { path: "id" });
+    });
+
+    if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
+
+    const sanitizedData = val.getSanitizedBody();
+
+    return await UserRepository.alterUser(id, sanitizedData);
+  }
+
 }

@@ -10,6 +10,7 @@ export interface ViewUserData {
   nome: string;
   cargo: string;
   foto_id?: string | null;
+  fopto?: foto | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,4 +18,12 @@ export interface ViewUserData {
 export interface ListUsersParams {
   pagina: number;
   limite: number;
+}
+
+interface foto {
+  id: string;
+  imagem: Buffer;
+  tipo_mime: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

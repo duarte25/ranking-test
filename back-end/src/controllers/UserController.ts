@@ -37,4 +37,13 @@ export default class UserController {
     const result = await UserService.findUser(id);
     sendResponse(res, 200, { data: result });
   }
+
+  static async alterUser(req: Request, res: Response) {
+    const { id } = req.params;
+    const updateData: Partial<CreateUserData> = { ...req.body };
+
+    const result = await UserService.alterUser(id, updateData);
+
+    sendResponse(res, 200, { data: result });
+  }
 }
