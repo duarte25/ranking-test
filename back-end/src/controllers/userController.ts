@@ -1,4 +1,4 @@
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/userService';
 import { CreateUserData, ListUsersParams } from '../interfaces/user';
 import { sendResponse } from '../utils/messages';
 import { Request, Response } from 'express';

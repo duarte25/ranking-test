@@ -1,6 +1,6 @@
-import { ValidationFuncs as v, Validator } from "../utils/Validation";
 import { CreateUserData, ListUsersParams, ViewUserData } from "../interfaces/user";
-import { UserRepository } from "../repositories/UserRepository";
+import { ValidationFuncs as v, Validator } from "../utils/Validation";
+import { UserRepository } from "../repositories/userRepository";
 import { APIError } from "../utils/wrapException";
 
 export class UserService {

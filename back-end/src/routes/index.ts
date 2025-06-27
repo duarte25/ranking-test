@@ -1,4 +1,5 @@
 import { Application, Request, Response } from "express";
+import photos from "./photoRouter";
 import users from "./userRouter";
 
 const routes = (app: Application): void => {
@@ -8,7 +9,8 @@ const routes = (app: Application): void => {
   });
 
   app.use(
-    users
+    users,
+    photos
   );
 };
 

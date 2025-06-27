@@ -1,4 +1,4 @@
-import UserController from '../controllers/UserController';
+import UserController from '../controllers/userController';
 import { wrapException } from '../utils/wrapException';
 import express from 'express';
 
