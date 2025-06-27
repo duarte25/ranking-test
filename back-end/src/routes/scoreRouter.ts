@@ -6,8 +6,8 @@ const router = express.Router();
 
 router
   .get("/scores", wrapException(ScoreController.listScoresController))
-// .get("/scores/:id", wrapException(UserController.findUser))
-// .post("/scores", wrapException(UserController.createUserController))
+  // .get("/scores/:id", wrapException(UserController.findUser))
+  .post("/scores", wrapException(ScoreController.createPontuacaoController))
 // .patch("/scores/:id", wrapException(UserController.alterUser))
 // .delete("/scores/:id", wrapException(UserController.deleteUser))
 

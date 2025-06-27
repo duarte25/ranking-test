@@ -1,5 +1,7 @@
+import { CreateScoreData, ListScoresParams, ViewScoreData } from "../interfaces/score";
+import { ValidationFuncs as v, Validator } from "../utils/Validation";
 import { ScoreRepository } from "../repositories/scoreRepository";
-import { ListScoresParams } from "../interfaces/score";
+import { APIError } from "../utils/wrapException";
 
 export class ScoreService {
 
@@ -23,50 +25,49 @@ export class ScoreService {
     });
   }
 
-  // static async createUser(userData: CreateUserData): Promise<ViewUserData> {
+  static async createScore(scoreData: CreateScoreData): Promise<ViewScoreData> {
 
-  //   let val = new Validator(userData);
-  //   await val.validate("nome", v.required(), v.length({ min: 3, max: 100 }))
-  //   await val.validate("cargo", v.required(), v.length({ min: 3, max: 100 }))
+    let val = new Validator(scoreData);
+    await val.validate("motivo", v.required(), v.length({ min: 3, max: 556 }))
+    await val.validate("pontos", v.required(), v.isInt());
 
-  //   await val.validate("foto_id", v.optional(), v.prismaUUID(), async (value: any) => {
-  //     return v.exists({ model: "imagem" })(value, { path: "id" });
-  //   });
+    await val.validate("usuario_id", v.optional(), v.prismaUUID(), async (value: any) => {
+      return v.exists({ model: "usuario" })(value, { path: "id" });
+    });
 
-  //   if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
+    if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
 
-  //   const sanitizedData = val.getSanitizedBody();
+    const sanitizedData = val.getSanitizedBody();
 
-  //   return await UserRepository.createUser(sanitizedData);
-  // }
+    return await ScoreRepository.createScore(sanitizedData);
+  }
 
-  // static async findUser(id: string) {
+  static async findScore(id: string) {
 
-  //   const uuidPrismaTest = await v.prismaUUID({ model: "usuario" })(id, { path: "id" });
+    const uuidPrismaTest = await v.prismaUUID({ model: "usuario" })(id, { path: "id" });
 
-  //   if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
+    if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
 
-  //   const address = await UserRepository.findUserByID(id);
+    const address = await ScoreRepository.findScoreByID(id);
 
-  //   return address;
-  // }
+    return address;
+  }
 
-  // static async alterUser(id: string, userData: Partial<CreateUserData>): Promise<ViewUserData> {
+  static async alterScore(id: string, scoreData: Partial<CreateScoreData>): Promise<ViewScoreData> {
 
-  //   let val = new Validator(userData);
+    let val = new Validator(scoreData);
 
-  //   await val.validate("nome", v.optional(), v.length({ min: 3, max: 100 }))
-  //   await val.validate("cargo", v.optional(), v.length({ min: 3, max: 100 }))
+    await val.validate("motivo", v.optional(), v.length({ min: 3, max: 556 }))
+    await val.validate("pontos", v.optional(), v.isInt());
 
-  //   await val.validate("foto_id", v.optional(), v.prismaUUID(), async (value: any) => {
-  //     return v.exists({ model: "imagem" })(value, { path: "id" });
-  //   });
+    await val.validate("usuario_id", v.optional(), v.prismaUUID(), async (value: any) => {
+      return v.exists({ model: "usuario" })(value, { path: "id" });
+    });
+    if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
 
-  //   if (val.anyErrors()) throw new APIError(val.getErrors(), 422);
+    const sanitizedData = val.getSanitizedBody();
 
-  //   const sanitizedData = val.getSanitizedBody();
-
-  //   return await UserRepository.alterUser(id, sanitizedData);
-  // }
+    return await ScoreRepository.alterScore(id, sanitizedData);
+  }
 
 }

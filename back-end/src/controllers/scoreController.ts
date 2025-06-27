@@ -1,4 +1,4 @@
-import { ListScoresParams } from '../interfaces/score';
+import { CreateScoreData, ListScoresParams } from '../interfaces/score';
 import { ScoreService } from '../services/scoreService';
 import { sendResponse } from '../utils/messages';
 import { Request, Response } from 'express';
@@ -21,28 +21,28 @@ export default class ScoreController {
     sendResponse(res, 200, result);
   }
 
-  // static async createUserController(req: Request, res: Response): Promise<void> {
-  //   const user: CreateUserData = { ...req.body };
+  static async createPontuacaoController(req: Request, res: Response): Promise<void> {
+    const user: CreateScoreData = { ...req.body };
 
-  //   const result = await UserService.createUser(user);
+    const result = await ScoreService.createScore(user);
 
-  //   // Retornar a resposta com os dados formatados
-  //   sendResponse(res, 201, result);
-  // }
+    // Retornar a resposta com os dados formatados
+    sendResponse(res, 201, result);
+  }
 
-  // static async findUser(req: Request, res: Response) {
-  //   const { id } = req.params;
+  static async findScore(req: Request, res: Response) {
+    const { id } = req.params;
 
-  //   const result = await UserService.findUser(id);
-  //   sendResponse(res, 200, { data: result });
-  // }
+    const result = await ScoreService.findScore(id);
+    sendResponse(res, 200, { data: result });
+  }
 
-  // static async alterUser(req: Request, res: Response) {
-  //   const { id } = req.params;
-  //   const updateData: Partial<CreateUserData> = { ...req.body };
+  static async alterScore(req: Request, res: Response) {
+    const { id } = req.params;
+    const updateData: Partial<CreateScoreData> = { ...req.body };
 
-  //   const result = await UserService.alterUser(id, updateData);
+    const result = await ScoreService.alterScore(id, updateData);
 
-  //   sendResponse(res, 200, { data: result });
-  // }
+    sendResponse(res, 200, { data: result });
+  }
 }

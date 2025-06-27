@@ -1,5 +1,6 @@
 import { paginate, PaginationOptions } from "../utils/pagination";
 import { prisma } from "../config/db_config.";
+import { CreateScoreData, ViewScoreData } from "../interfaces/score";
 
 export class ScoreRepository {
 
@@ -8,49 +9,46 @@ export class ScoreRepository {
     return paginate(prisma.pontuacao, where, options);
   }
 
-  // static async createUser(userData: CreateUserData): Promise<ViewUserData> {
-  //   const { foto_id, ...rest } = userData;
+  static async createScore(scoreData: CreateScoreData): Promise<ViewScoreData> {
+    const { usuario_id, ...rest } = scoreData;
 
-  //   if (process.env.NODE_ENV == 'test') {
-  //     (rest as any).conta_ativa = true;
-  //   }
+    return await prisma.pontuacao.create({
+      data: {
+        ...rest,
+        usuario: {
+          connect: { id: usuario_id }
+        },
+      },
+      include: {
+        usuario: true, // Incluir os dados do usuário relacionado
+      }
+    });
+  }
 
-  //   const userCreated = await prisma.usuario.create({
-  //     data: {
-  //       ...rest,
-  //       foto: foto_id
-  //         ? { connect: { id: foto_id } } // Conectar ao grupo pelo ID
-  //         : undefined,
-  //     }
-  //   });
+  static async findScoreByID(id: string): Promise<ViewScoreData | null> {
+    return await prisma.pontuacao.findUnique({
+      where: { id },
+      include: {
+        usuario: true,
+      }
+    });
+  }
 
-  //   return userCreated;
-  // }
+  static async alterScore(id: string, scoreData: Partial<CreateScoreData>): Promise<ViewScoreData> {
 
-  // static async findUserByID(id: string): Promise<ViewUserData | null> {
-  //   return await prisma.usuario.findUnique({
-  //     where: { id },
-  //     include: {
-  //       foto: true,
-  //     }
-  //   });
-  // }
+    const { usuario_id, ...restScoreData } = scoreData;
 
-  // static async alterUser(id: string, userData: Partial<CreateUserData>): Promise<ViewUserData> {
-
-  //   const { foto_id, ...restUserData } = userData;
-
-  //   return await prisma.usuario.update({
-  //     where: { id },
-  //     data: {
-  //       ...restUserData,
-  //       foto: userData.foto_id
-  //         ? { connect: { id: userData.foto_id } } // Conectar ao grupo pelo ID
-  //         : undefined,
-  //     },
-  //     include: {
-  //       foto: true,
-  //     }
-  //   });
-  // }
+    return await prisma.pontuacao.update({
+      where: { id },
+      data: {
+        ...restScoreData,
+        usuario: {
+          connect: { id: usuario_id }
+        },
+      },
+      include: {
+        usuario: true,
+      }
+    });
+  }
 }
