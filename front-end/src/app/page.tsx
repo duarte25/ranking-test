@@ -46,7 +46,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between px-10">
       <div
         className="w-2/6 aspect-[3/3] bg-[url('/placa_primeiro_lugar.svg')] bg-contain bg-no-repeat bg-center 
         flex justify-center pt-60">
@@ -87,13 +87,12 @@ export default function Home() {
               ))
             }
           </div>
-
         </div>
       </div>
       <div
         className="w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain bg-no-repeat bg-center 
-        flex items-center justify-center">
-        <div className="w-3/5 rounded">
+        flex items-center justify-center pt-12">
+        <div className="w-3/5 rounded overflow-y-auto h-[40vh]">
           <Table className="w-full pt-24 border-separate border-spacing-y-2">
             <TableBody>
               {Array.isArray(data) &&
