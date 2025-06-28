@@ -27,3 +27,13 @@ interface foto {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ViewFirtsRank {
+  topUser: ViewUserData;
+  lastScores: ViewLastScores;
+}
+
+export interface ViewLastScores {
+  motivo: string;
+  pontos: number;
+}
