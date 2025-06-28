@@ -1,14 +1,27 @@
-// components/RankingTable.tsx
+"you client";
+
 import { ViewUserData } from "@/api/models/User";
+import { fetchUseQuery } from "@/api/services/fetchUseQuery";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { convertBytesToImageUrl } from "@/utils/convertImage";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useQuery } from "@tanstack/react-query";
 
-interface RankingTableProps {
-  data: ViewUserData[] | undefined;
-}
+export function RankingTable() {
 
-export function RankingTable({ data }: RankingTableProps) {
+    const { data } = useQuery({
+    queryKey: ["listUser"],
+    queryFn: async () => {
+      const response = await fetchUseQuery<unknown, ViewUserData[]>({
+        route: "/users",
+        method: "GET",
+        nextOptions: {},
+      });
+
+      return response.data;
+    },
+    retry: 2,
+  });
 
   return (
     <div
