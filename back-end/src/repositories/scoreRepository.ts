@@ -10,18 +10,33 @@ export class ScoreRepository {
   }
 
   static async createScore(scoreData: CreateScoreData): Promise<ViewScoreData> {
-    const { usuario_id, ...rest } = scoreData;
+    const { usuario_id, pontos, ...rest } = scoreData;
 
-    return await prisma.pontuacao.create({
-      data: {
-        ...rest,
-        usuario: {
-          connect: { id: usuario_id }
+    return await prisma.$transaction(async (tx) => {
+      // Criar nova pontuação
+      const novaPontuacao = await tx.pontuacao.create({
+        data: {
+          ...rest,
+          pontos,
+          usuario: { connect: { id: usuario_id } },
         },
-      },
-      include: {
-        usuario: true, // Incluir os dados do usuário relacionado
-      }
+      });
+
+      // Atualizar o campo pontuacao do usuário somando o novo pontos
+      const usuarioAtualizado = await tx.usuario.update({
+        where: { id: usuario_id },
+        data: {
+          pontuacao: {
+            increment: pontos,
+          },
+        },
+      });
+
+      // Retorna nova pontuação com usuário atualizado
+      return {
+        ...novaPontuacao,
+        usuario: usuarioAtualizado,
+      };
     });
   }
 
@@ -48,6 +63,15 @@ export class ScoreRepository {
       },
       include: {
         usuario: true,
+      }
+    });
+  }
+
+  static async deleteScoreById(id: string): Promise<ViewScoreData> {
+    return prisma.pontuacao.delete({
+      where: { id },
+      include: {
+        usuario: true
       }
     });
   }

@@ -3,6 +3,7 @@ import { ViewUserData } from "./user";
 export interface ListScoresParams {
   pagina: number;
   limite: number;
+  idUsuario?: string;
 }
 
 export interface CreateScoreData {

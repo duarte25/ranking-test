@@ -11,6 +11,7 @@ export interface ViewUserData {
   cargo: string;
   foto_id?: string | null;
   fopto?: foto | null;
+  pontuacao: number;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,5 +1,5 @@
-import { UserService } from '../services/userService';
 import { CreateUserData, ListUsersParams } from '../interfaces/user';
+import { UserService } from '../services/userService';
 import { sendResponse } from '../utils/messages';
 import { Request, Response } from 'express';
 
@@ -20,6 +20,15 @@ export default class UserController {
 
     // Retornar a resposta com os dados formatados
     sendResponse(res, 200, result);
+  }
+
+  // Método estático para listar usuários
+  static async findFirstRankUser(req: Request, res: Response): Promise<void> {
+
+    const result = await UserService.listFirstRankUser();
+
+    // Retornar a resposta com os dados formatados
+    sendResponse(res, 200, { data: result });
   }
 
   static async createUserController(req: Request, res: Response): Promise<void> {

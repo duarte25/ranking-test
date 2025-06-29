@@ -8,9 +8,13 @@ export class ScoreService {
   static async listScores(
     params: ListScoresParams
   ) {
-    const { pagina, limite } = params;
+    const { pagina, limite, idUsuario } = params;
 
     const where: Record<string, any> = {};
+
+    if (idUsuario) {
+      where.usuario_id = idUsuario;
+    }
 
     return await ScoreRepository.listScores(where, {
       page: pagina,
@@ -49,9 +53,7 @@ export class ScoreService {
     if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
 
     const result = await ScoreRepository.findScoreByID(id);
-    
-    if (!result) throw new APIError("Pontuação não encontrado.", 404);
-
+    if (!result) throw new APIError("Usuário não encontrado.", 404);
     return result;
   }
 
@@ -70,6 +72,18 @@ export class ScoreService {
     const sanitizedData = val.getSanitizedBody();
 
     return await ScoreRepository.alterScore(id, sanitizedData);
+  }
+
+  static async deleteScore(id: string) {
+
+    const uuidPrismaTest = await v.prismaUUID({ model: "pontuacao" })(id, { path: "id" });
+
+    if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
+
+    const result = await ScoreRepository.deleteScoreById(id);
+    if (!result) throw new APIError("Pontuação não encontrado.", 404);
+    
+    return result;
   }
 
 }

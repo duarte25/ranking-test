@@ -12,7 +12,8 @@ export default class ScoreController {
 
     const params: ListScoresParams = {
       pagina,
-      limite
+      limite,
+      idUsuario: req.query.idUsuario as string | undefined,
     };
 
     const result = await ScoreService.listScores(params);
@@ -43,6 +44,14 @@ export default class ScoreController {
 
     const result = await ScoreService.alterScore(id, updateData);
 
+    sendResponse(res, 200, { data: result });
+  }
+
+
+  static async deleteScore(req: Request, res: Response) {
+    const { id } = req.params;
+
+    const result = await ScoreService.deleteScore(id);
     sendResponse(res, 200, { data: result });
   }
 }

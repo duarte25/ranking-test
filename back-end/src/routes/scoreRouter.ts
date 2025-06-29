@@ -9,6 +9,6 @@ router
   .get("/scores/:id", wrapException(ScoreController.findScore))
   .post("/scores", wrapException(ScoreController.createPontuacaoController))
   .patch("/scores/:id", wrapException(ScoreController.alterScore))
-// .delete("/scores/:id", wrapException(UserController.deleteUser))
+.delete("/scores/:id", wrapException(ScoreController.deleteScore))
 
 export default router;

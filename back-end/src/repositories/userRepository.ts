@@ -7,11 +7,34 @@ export class UserRepository {
   static async listUsers(where: any, options: PaginationOptions) {
 
     return paginate(prisma.usuario, where, options, {
+      orderBy: {
+        pontuacao: 'desc',
+      },
       include: {
         foto: true
       }
     });
   }
+
+  static async listFirstRankUser(where: any = {}) {
+    const [topUser, lastScores] = await Promise.all([
+      prisma.usuario.findFirst({
+        where,
+        orderBy: { pontuacao: 'desc' },
+        include: { foto: true },
+      }),
+      prisma.pontuacao.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      }),
+    ]);
+
+    return {
+      topUser,
+      lastScores,
+    };
+  }
+
 
   static async createUser(userData: CreateUserData): Promise<ViewUserData> {
     const { foto_id, ...rest } = userData;
@@ -43,7 +66,7 @@ export class UserRepository {
 
   static async alterUser(id: string, userData: Partial<CreateUserData>): Promise<ViewUserData> {
 
-  const { foto_id, ...restUserData } = userData;
+    const { foto_id, ...restUserData } = userData;
 
     return await prisma.usuario.update({
       where: { id },

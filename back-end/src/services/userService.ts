@@ -25,6 +25,11 @@ export class UserService {
     });
   }
 
+   static async listFirstRankUser() {
+
+    return await UserRepository.listFirstRankUser()   
+  }
+
   static async createUser(userData: CreateUserData): Promise<ViewUserData> {
 
     let val = new Validator(userData);

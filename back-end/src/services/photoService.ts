@@ -7,7 +7,7 @@ export class PhotoService {
   static async createPhoto(fileBuffer: Buffer, mimeType: string) {
 
     const image = await imageType(fileBuffer);
-
+    
     if (!image) throw new APIError("Arquivo enviado não é uma imagem válida", 422)
 
     const newPhoto = await PhotoRepository.createPhoto(fileBuffer, mimeType);
