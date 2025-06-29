@@ -23,6 +23,7 @@ export function RankingTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<ViewUserData[]>([]);
   const [cadastrarUsuarioOpen, setCadastrarUsuarioOpen] = useState(false);
+  const [cadastrarPontoOpen, setCadastrarPontoOpen] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -170,7 +171,7 @@ export function RankingTable() {
           <Plus /> NOVO COLABORADOR
         </Button>
         <Button type="button" className="bg-gray-button" onClick={() => setCadastrarUsuarioOpen(true)}>
-          <Star/> ATRIBUIR PONTOS
+          <Star /> ATRIBUIR PONTOS
         </Button>
       </div>
     </div>

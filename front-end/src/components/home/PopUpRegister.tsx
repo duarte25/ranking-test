@@ -100,7 +100,7 @@ export function PopUpRegister({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [uploadedImageUrl] = useState<string | null>(null);
 
-  console.log("OLHA O ERRO", formUser.formState.errors)
+  // console.log("OLHA O ERRO", formUser.formState.errors)
 
   return (
 

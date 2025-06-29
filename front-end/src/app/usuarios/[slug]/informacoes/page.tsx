@@ -1,12 +1,16 @@
+"use client"; 
+
 import ContainerPageContent from "@/components/ContainerPageContentProps";
 import DataTableCompanies from "@/components/Users/DataTableUsers";
+import GetTableDataComponent from "@/components/GetTableData";
 import ButtonLink from "@/components/ButtonLink";
 import { CirclePlus } from "lucide-react";
 import Title from "@/components/Title";
-import GetTableDataComponent from "@/components/GetTableData";
+import { useParams } from "next/navigation";
 
-export default async function UserScore({ params }: { params: any }) {
-  const { slug } = params;
+export default function UserScore() {
+  const params = useParams();
+  const slug = params.slug as string;
 
   return (
     <ContainerPageContent>
@@ -23,6 +27,5 @@ export default async function UserScore({ params }: { params: any }) {
       />
 
     </ContainerPageContent>
-
   );
 }
