@@ -12,22 +12,35 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@radix-ui/react-avatar";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { PopUpRegister } from "./PopUpRegisterUser";
-import { Plus, Star } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog";
+import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
 import { PopUpRegisterScore } from "./PopUpRegisterScore";
-import Link from "next/link";
+import { PopUpRegister } from "./PopUpRegisterUser";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { Plus, Star } from "lucide-react";
+import { Button } from "../ui/button";
+import Image from "next/image";
+import { fetchApi } from "@/api/services/fetchApi";
+import { handleErrorMessages } from "@/errors/handleErrorMessage";
+import { toast } from "react-toastify";
 
 export function RankingTable() {
+  const router = useRouter();
+
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<ViewUserData[]>([]);
   const [cadastrarUsuarioOpen, setCadastrarUsuarioOpen] = useState(false);
   const [cadastrarPontoOpen, setCadastrarPontoOpen] = useState(false);
+  const [openUserDialog, setOpenUserDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<ViewUserData | null>(null);
+  const [userToDelete, setUserToDelete] = useState<ViewUserData | null>(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const queryClient = useQueryClient();
 
   // Carrega os dados da página atual
   const { data, isFetching } = useQuery({
@@ -94,6 +107,46 @@ export function RankingTable() {
     };
   }, [isFetching, currentPage, totalPages]);
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetchApi({
+        route: `/users/${userToDelete?.id}`,
+        method: "DELETE"
+      });
+
+      if (response.error) {
+        const errorMessages = response.errors.map((error) => {
+          // Verifica se o erro é um objeto ApiError ou uma string
+          if (typeof error === "string") {
+            return error;
+          } else {
+            return error.message;
+          }
+        });
+
+        // Passa o array de strings para handleErrorMessages
+        handleErrorMessages(errorMessages);
+      } else {
+        toast.success("Usuário deletada.");
+        queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
+        queryClient.invalidateQueries({ queryKey: ["listUser"] });
+        queryClient.invalidateQueries({ queryKey: ["getUserScore"] });
+      }
+
+    } catch (error) {
+      handleErrorMessages(["Erro ao deletar usuário."]);
+    } finally {
+      setOpenDeleteDialog(false);
+    }
+  };
+
+  const imageUrls = useMemo(() => {
+  return users.map((user) =>
+    convertBytesToImageUrl(user.foto?.imagem) ||
+    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+  );
+}, [users]);
+
   return (
     <div className="flex flex-col w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain 
     bg-no-repeat bg-center items-center justify-center pt-28 space-y-8">
@@ -108,10 +161,13 @@ export function RankingTable() {
           <TableBody>
             {users.map((user, index) => {
               const posicao = index + 1;
-              const userUrl = `/usuarios/${user.id}/informacoes`;
+              const imageUrl = imageUrls[index];
 
               return (
-                <TableRow key={user.id}>
+                <TableRow key={user.id} onClick={() => {
+                  setSelectedUser(user);
+                  setOpenUserDialog(true);
+                }}>
                   <TableCell className="border-y-2 border-l-2 rounded-l-sm w-12 text-center align-middle py-0">
                     {posicao <= 3 ? (
                       <div
@@ -129,30 +185,23 @@ export function RankingTable() {
                       </div>
                     )}
                   </TableCell>
-
                   <TableCell className="border-y-2 py-0">
-                    <Link href={userUrl} className="block w-full h-full">
-                      <Avatar className="rounded-full">
-                        <AvatarImage
-                          src={
-                            convertBytesToImageUrl(user.foto?.imagem) ||
-                            "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png "
-                          }
-                          alt="Usuário"
-                          className="object-cover rounded-full size-6 sm:size-10 md:size-12 lg:size-12"
-                        />
-                        <AvatarFallback className="rounded-md text-gray-font font-bold">
-                          Usuário
-                        </AvatarFallback>
-                      </Avatar>
-                    </Link>
+                    <Avatar className="rounded-full">
+                      <AvatarImage
+                        src={imageUrl}
+                        alt="Usuário"
+                        className="object-cover rounded-full size-6 sm:size-10 md:size-12 lg:size-12"
+                      />
+                      <AvatarFallback className="rounded-md text-gray-font font-bold">
+                        Usuário
+                      </AvatarFallback>
+                    </Avatar>
                   </TableCell>
-
                   <TableCell className="border-y-2">
-                    <Link href={userUrl} className="block w-full h-full">{user.nome}</Link>
+                    {user.nome}
                   </TableCell>
                   <TableCell className="border-y-2 border-r-2 rounded-r-sm text-gray-font font-bold py-0">
-                    <Link href={userUrl} className="block w-full h-full"> {user.pontuacao}</Link>
+                    {user.pontuacao}
                   </TableCell>
                 </TableRow>
               );
@@ -176,6 +225,68 @@ export function RankingTable() {
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog open={openUserDialog} onOpenChange={setOpenUserDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex flex-row justify-between">
+              <AlertDialogTitle>Ações para {selectedUser?.nome}</AlertDialogTitle>
+              <Image className="hover:bg-red-200" onClick={() => setOpenUserDialog(false)} src="close.svg" alt="close" width={25} height={25} />
+            </div>
+            <AlertDialogDescription>
+              O que você deseja fazer?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-2">
+            <Button
+              className="w-full"
+              onClick={() => {
+                if (selectedUser) {
+                  router.push(`/usuarios/${selectedUser.id}/informacoes`);
+                }
+              }}
+            >
+              Visualizar usuário
+            </Button>
+
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={() => {
+                setUserToDelete(selectedUser);
+                setOpenUserDialog(false);
+                setOpenDeleteDialog(true); // abre a modal de confirmação de exclusão
+              }}
+            >
+              Deletar colaborador
+            </Button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deseja realmente excluir?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não poderá ser desfeita. Tem certeza que deseja excluir <strong>{userToDelete?.nome}</strong>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleDelete()
+                setOpenDeleteDialog(false);
+              }}
+            >
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="space-x-4">
         <Button type="button" className="bg-gray-button" onClick={() => setCadastrarUsuarioOpen(true)}>
           <Plus /> NOVO COLABORADOR

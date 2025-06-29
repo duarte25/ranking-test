@@ -6,12 +6,13 @@ import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../u
 import { handleErrorMessages } from "@/errors/handleErrorMessage";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { fetchApi } from "@/api/services/fetchApi";
+import { PopUpAlterScore } from "./PopUpAlterScore";
 import { ViewScoreData } from "@/api/models/Score";
 import { MoreHorizontal } from "lucide-react";
 import { ApiResponse } from "@/types/api";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { PopUpAlterScore } from "./PopUpAlterScore";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DataTableScoresProps {
   dados: ApiResponse<string>;
@@ -23,6 +24,7 @@ export default function DataTableUserScore({ dados, onUpdate }: DataTableScoresP
   const [scoreToDelete, setScoreToDelete] = useState<ViewScoreData | null>(null);
   const [alterScoreOpen, setAlterScoreOpen] = useState(false);
   const [scoreId, setScoreId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const handleDelete = async () => {
     if (!scoreToDelete) return;
@@ -47,6 +49,9 @@ export default function DataTableUserScore({ dados, onUpdate }: DataTableScoresP
         handleErrorMessages(errorMessages);
       } else {
         toast.success("Pontuação deletada.");
+        queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
+        queryClient.invalidateQueries({ queryKey: ["listUser"] });
+        queryClient.invalidateQueries({ queryKey: ["getUserScore"] });
         onUpdate();
       }
 
