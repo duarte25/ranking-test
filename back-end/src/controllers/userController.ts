@@ -56,4 +56,11 @@ export default class UserController {
 
     sendResponse(res, 200, { data: result });
   }
+
+  static async deleteUser(req: Request, res: Response) {
+    const { id } = req.params;
+
+    const result = await UserService.deleteUser(id);
+    sendResponse(res, 200, { data: result });
+  }
 }

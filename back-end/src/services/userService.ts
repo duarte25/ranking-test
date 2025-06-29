@@ -82,4 +82,15 @@ export class UserService {
     return await UserRepository.alterUser(id, sanitizedData);
   }
 
+  static async deleteUser(id: string) {
+
+    const uuidPrismaTest = await v.prismaUUID({ model: "usuario" })(id, { path: "id" });
+
+    if (uuidPrismaTest != true) throw new APIError(uuidPrismaTest, 404)
+
+    const result = await UserRepository.deleteUserById(id);
+    if (!result) throw new APIError("Usuário não encontrado.", 404);
+
+    return result;
+  }
 }

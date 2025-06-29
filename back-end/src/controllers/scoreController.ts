@@ -47,7 +47,6 @@ export default class ScoreController {
     sendResponse(res, 200, { data: result });
   }
 
-
   static async deleteScore(req: Request, res: Response) {
     const { id } = req.params;
 
