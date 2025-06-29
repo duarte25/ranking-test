@@ -1,30 +1,20 @@
-import { ViewUserData } from "@/api/models/User";
-import { fetchUseQuery } from "@/api/services/fetchUseQuery";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
-import { convertBytesToImageUrl } from "@/utils/convertImage";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@radix-ui/react-avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog";
+import {  Table,  TableBody,  TableCell,  TableRow,} from "@/components/ui/table";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { handleErrorMessages } from "@/errors/handleErrorMessage";
 import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
+import { convertBytesToImageUrl } from "@/utils/convertImage";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { fetchUseQuery } from "@/api/services/fetchUseQuery";
 import { PopUpRegisterScore } from "./PopUpRegisterScore";
 import { PopUpRegister } from "./PopUpRegisterUser";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ViewUserData } from "@/api/models/User";
 import { useRouter } from "next/navigation";
 import { Plus, Star } from "lucide-react";
+import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { fetchApi } from "@/api/services/fetchApi";
-import { handleErrorMessages } from "@/errors/handleErrorMessage";
-import { toast } from "react-toastify";
 
 export function RankingTable() {
   const router = useRouter();
@@ -82,7 +72,6 @@ export function RankingTable() {
     }
   }, [data, currentPage]);
 
-
   // Observa o último elemento para carregar mais dados
   useEffect(() => {
     const target = observerRef.current;
@@ -107,45 +96,42 @@ export function RankingTable() {
     };
   }, [isFetching, currentPage, totalPages]);
 
-  const handleDelete = async () => {
-    try {
-      const response = await fetchApi({
-        route: `/users/${userToDelete?.id}`,
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await fetchUseQuery({
+        route: `/users/${userId}`,
         method: "DELETE"
       });
 
       if (response.error) {
         const errorMessages = response.errors.map((error) => {
-          // Verifica se o erro é um objeto ApiError ou uma string
-          if (typeof error === "string") {
-            return error;
-          } else {
-            return error.message;
-          }
+          return typeof error === "string" ? error : error.message;
         });
-
-        // Passa o array de strings para handleErrorMessages
-        handleErrorMessages(errorMessages);
-      } else {
-        toast.success("Usuário deletada.");
-        queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
-        queryClient.invalidateQueries({ queryKey: ["listUser"] });
-        queryClient.invalidateQueries({ queryKey: ["getUserScore"] });
+        throw new Error(errorMessages.join(", "));
       }
 
-    } catch (error) {
-      handleErrorMessages(["Erro ao deletar usuário."]);
-    } finally {
+      return response;
+    },
+    onSuccess: () => {
+      toast.success("Usuário deletado com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
+      queryClient.invalidateQueries({ queryKey: ["listUser"] });
+      queryClient.invalidateQueries({ queryKey: ["getUserScore"] });
+    },
+    onError: (error) => {
+      handleErrorMessages([error.message || "Erro ao deletar usuário."]);
+    },
+    onSettled: () => {
       setOpenDeleteDialog(false);
     }
-  };
+  });
 
   const imageUrls = useMemo(() => {
-  return users.map((user) =>
-    convertBytesToImageUrl(user.foto?.imagem) ||
-    "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-  );
-}, [users]);
+    return users.map((user) =>
+      convertBytesToImageUrl(user.foto?.imagem) ||
+      "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+    );
+  }, [users]);
 
   return (
     <div className="flex flex-col w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain 
@@ -277,10 +263,11 @@ export function RankingTable() {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                handleDelete()
-                setOpenDeleteDialog(false);
+                if (userToDelete?.id) {
+                  mutate(userToDelete.id);
+                }
               }}
-            >
+              disabled={isPending}>
               Confirmar
             </AlertDialogAction>
           </AlertDialogFooter>
