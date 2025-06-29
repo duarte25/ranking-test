@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { handleErrorMessages } from "@/errors/handleErrorMessage";
+import { useQueryClient } from "@tanstack/react-query";
 import { ScoreSchemas } from "@/schemas/ScoreSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateScoreData } from "@/api/models/Score";
@@ -16,14 +17,13 @@ import ComboboxDebounce from "../ComboboxDebounce";
 import { fetchApi } from "@/api/services/fetchApi";
 import { ViewUserData } from "@/api/models/User";
 import ButtonLoading from "../ButtonLoading";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
+import Image from "next/image";
 import { z } from "zod";
-import { useQueryClient } from "@tanstack/react-query";
 
 type InputDialogProps = {
   open: boolean;
@@ -71,7 +71,8 @@ export function PopUpRegisterScore({
     <Form {...formScore}>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
-          <DialogHeader>
+          <DialogHeader className="flex flex-row items-center">
+            <Image src={"icon_register.svg"} alt={"userIcon"} width={50} height={50} />
             <DialogTitle>Atribuir Pontos</DialogTitle>
           </DialogHeader>
 

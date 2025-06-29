@@ -14,7 +14,7 @@ export interface ApiErrorQuery {
   message: string;
   errors: string[];
   code: number;
-  data: unknown[]; // Mantemos o 'full' para casos específicos, mas as outras propriedades são mais importantes para uso geral
+  data: unknown[]; 
 }
 
 export async function fetchUseQuery<RequestData, ResponseData>({

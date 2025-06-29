@@ -18,6 +18,7 @@
     "express": "^4.21.2",
     "image-type": "^6.0.0",
     "multer": "^2.0.1",
+    "node-cron": "^4.1.1",
     "validation-br": "^1.5.2"
   },
   "devDependencies": {
