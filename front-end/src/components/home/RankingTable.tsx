@@ -145,21 +145,21 @@ export function RankingTable() {
   }, [users]);
 
   return (
-    <div className="flex flex-col w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain
-    bg-no-repeat bg-center items-center justify-center pt-28 space-y-8">
+    <div className="flex flex-col w-full aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain
+    bg-no-repeat bg-center items-center justify-center pt-28 space-y-8 sm:space-y-4 lg:space-y-8">
       <PopUpRegister open={cadastrarUsuarioOpen}
         onOpenChange={setCadastrarUsuarioOpen} />
 
       <PopUpRegisterScore open={cadastrarPontoOpen}
         onOpenChange={setCadastrarPontoOpen} />
 
-      <div className="w-3/5 rounded h-[40vh] overflow-y-auto">
+      <div className="w-full sm:w-11/12 md:w-4/5 lg:w-3/5 rounded overflow-y-auto
+         max-h-[40vh] sm:h-[10vh]  md:h-[25vh] lg:h-[35vh] xl:h-[40vh]2xl:h-[60vh]">
         <Table className="w-full border-separate border-spacing-y-2">
           <TableBody>
             {users.map((user, index: number) => {
               const posicao = index + 1;
               const imageUrl = imageUrls[index];
-
               return (
                 <TableRow key={user.id} onClick={() => {
                   setSelectedUser(user);
@@ -234,7 +234,6 @@ export function RankingTable() {
             >
               Visualizar usuário
             </Button>
-
             <Button
               variant="destructive"
               className="w-2/3 "
@@ -260,6 +259,7 @@ export function RankingTable() {
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setOpenDeleteDialog(false)}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
+              className="bg-red-500"
               onClick={() => {
                 if (selectedUser?.id) {
                   mutate(selectedUser.id);
@@ -273,10 +273,10 @@ export function RankingTable() {
       </AlertDialog>
 
       <div className="space-x-4">
-        <Button type="button" className="bg-gray-button" onClick={() => setCadastrarUsuarioOpen(true)}>
+        <Button type="button" className="bg-gray-button sm:h-6 md:h-8" onClick={() => setCadastrarUsuarioOpen(true)}>
           <Plus /> NOVO COLABORADOR
         </Button>
-        <Button type="button" className="bg-gray-button" onClick={() => setCadastrarPontoOpen(true)}>
+        <Button type="button" className="bg-gray-button sm:h-6 md:h-8" onClick={() => setCadastrarPontoOpen(true)}>
           <Star /> ATRIBUIR PONTOS
         </Button>
       </div>

@@ -9,9 +9,11 @@ interface TopUserCardProps {
 export function TopUserCard({ dataFirtsRank }: TopUserCardProps) {
 
   return (
-    <div className="w-2/6 aspect-[3/3] bg-[url('/placa_primeiro_lugar.svg')] bg-contain bg-no-repeat bg-center flex justify-center pt-60">
-      <div className="-rotate-[16.33deg] flex flex-col gap-4 w-2/6">
-        <span className="text-gray-font font-medium">
+    <div className="w-full aspect-[3/3] bg-[url('/placa_primeiro_lugar.svg')] bg-contain bg-no-repeat bg-center flex justify-center pt-60
+     sm:pt-24 md:pt-28 lg:pt-24 xl:pt-40 2xl:pt-60">
+      <div className="-rotate-[16.33deg] flex flex-col lg:gap-2 xl:gap-4 w-2/6">
+        <span className="text-gray-font font-medium
+        sm:pt-2 md:pt-4 lg:pt-4 xl:pt-0 2xl:pt-0">
           {dataFirtsRank?.topUser.pontuacao}pts
         </span>
         <Avatar className="rounded-full flex justify-center">
@@ -21,8 +23,8 @@ export function TopUserCard({ dataFirtsRank }: TopUserCardProps) {
               "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png "
             }
             alt={"Usuário"}
-            className="object-cover rounded-full size-6 sm:size-10 md:size-12 lg:size-28"
-          />
+            className="object-cover rounded-full 
+             size-6 sm:size-5 md:size-10 lg:size-16" />
           <AvatarFallback className="rounded-md text-gray-font font-bold">
             Usuário
           </AvatarFallback>
@@ -35,7 +37,7 @@ export function TopUserCard({ dataFirtsRank }: TopUserCardProps) {
             {dataFirtsRank?.topUser.cargo}
           </span>
         </div>
-        <div className="flex flex-col gap-4 pt-22">
+        <div className="flex flex-col gap-4 sm:pt-2 md:pt-4 lg:pt-4 xl:pt-16 2xl:pt-24">
           {Array.isArray(dataFirtsRank?.lastScores) &&
             dataFirtsRank.lastScores.map((score: ViewLastScores, index: number) => (
               <div className="flex justify-between bg-gray-bar p-2 rounded-sm" key={index}>

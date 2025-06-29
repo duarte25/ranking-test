@@ -22,9 +22,13 @@ export default function Home() {
   });
 
   return (
-    <div className="flex justify-between px-10">
-      <TopUserCard dataFirtsRank={dataFirtsRank} />
-      <RankingTable />
+    <div className="flex items-center flex-col lg:items-start lg:flex-row lg:justify-between px-10">
+      <div className="sm:w-full md:w-5/6 lg:w-3/6 xl:w-5/12 2xl:w-4/12 ">
+        <TopUserCard dataFirtsRank={dataFirtsRank} />
+      </div>
+      <div className="sm:w-full md:w-5/6 lg:w-4/6 xl:w-7/12 2xl:w-4/12">
+        <RankingTable />
+      </div>
     </div>
   );
 }
