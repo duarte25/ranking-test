@@ -1,6 +1,6 @@
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog";
-import {  Table,  TableBody,  TableCell,  TableRow,} from "@/components/ui/table";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { Table, TableBody, TableCell, TableRow, } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { handleErrorMessages } from "@/errors/handleErrorMessage";
 import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
@@ -16,70 +16,76 @@ import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import Image from "next/image";
 
+function RankBadge({ posicao }: { posicao: number }) {
+  const imageUrl = `/rank_${posicao <= 3 ? posicao : 4}.svg`;
+  return (
+    <div
+      className="size-6 sm:size-10 md:size-12 lg:size-14 bg-contain bg-no-repeat bg-center flex items-center justify-center text-white"
+      style={{ backgroundImage: `url('${imageUrl}')` }}
+    >
+      {posicao}°
+    </div>
+  );
+}
+
+export interface FetchUsersResponse {
+  data: ViewUserData[];
+  totalPaginas: number;
+  pagina: number;
+  resultados?: number;
+  limite?: number;
+  code?: number;
+  message?: string;
+  errors?: string[];
+}
+
 export function RankingTable() {
   const router = useRouter();
-
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [users, setUsers] = useState<ViewUserData[]>([]);
   const [cadastrarUsuarioOpen, setCadastrarUsuarioOpen] = useState(false);
   const [cadastrarPontoOpen, setCadastrarPontoOpen] = useState(false);
   const [openUserDialog, setOpenUserDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<ViewUserData | null>(null);
-  const [userToDelete, setUserToDelete] = useState<ViewUserData | null>(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
 
-  // Carrega os dados da página atual
-  const { data, isFetching } = useQuery({
-    queryKey: ["listUser", currentPage],
-    queryFn: async () => {
-      const response = await fetchUseQuery<unknown, ViewUserData[]>({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching,
+  } = useInfiniteQuery<FetchUsersResponse, Error>({
+    queryKey: ["listUser"],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await fetchUseQuery<unknown, any>({
         route: "/users",
         method: "GET",
-        data: { pagina: currentPage.toString() },
+        data: { pagina: (pageParam as number).toString() },
         nextOptions: {},
       });
 
-      setTotalPages(response?.totalPaginas ?? 1);
-      return response.data;
+      return {
+        data: response.data ?? [],
+        pagina: response.pagina ?? 1,
+        totalPaginas: response.totalPaginas ?? 1,
+        resultados: response.resultados ?? 0,
+        limite: response.limite ?? 10,
+        message: response.message ?? "",
+      };
     },
-    retry: 2,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage.pagina + 1;
+      return nextPage <= lastPage.totalPaginas ? nextPage : undefined;
+    },
+    initialPageParam: 1,
     refetchOnWindowFocus: false,
-    enabled: currentPage <= totalPages,
+    retry: 2,
   });
 
-  useEffect(() => {
-    if (currentPage === 1) {
-      setUsers([]); // Reseta a lista
-    }
-  }, [currentPage]);
-
-  useEffect(() => {
-    if (data) {
-      setUsers((prev) => {
-        if (currentPage === 1) return data;
-
-        const merged = [...prev, ...data];
-        const uniqueMap = new Map();
-        for (const user of merged) {
-          uniqueMap.set(user.id, user);
-        }
-        return Array.from(uniqueMap.values());
-      });
-    }
-  }, [data, currentPage]);
-
-  // Observa o último elemento para carregar mais dados
+  // Adaptando o Intersection Observer para useInfiniteQuery
   useEffect(() => {
     const target = observerRef.current;
-
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !isFetching && currentPage < totalPages) {
-          setCurrentPage((prev) => prev + 1);
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
         }
       },
       { threshold: 1.0 }
@@ -94,7 +100,12 @@ export function RankingTable() {
         observer.unobserve(target);
       }
     };
-  }, [isFetching, currentPage, totalPages]);
+    // As dependências agora são as propriedades do useInfiniteQuery
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const users = useMemo(() => {
+    return data?.pages.flatMap(page => page.data) ?? [];
+  }, [data]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (userId: string) => {
@@ -134,7 +145,7 @@ export function RankingTable() {
   }, [users]);
 
   return (
-    <div className="flex flex-col w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain 
+    <div className="flex flex-col w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain
     bg-no-repeat bg-center items-center justify-center pt-28 space-y-8">
       <PopUpRegister open={cadastrarUsuarioOpen}
         onOpenChange={setCadastrarUsuarioOpen} />
@@ -145,7 +156,7 @@ export function RankingTable() {
       <div className="w-3/5 rounded h-[40vh] overflow-y-auto">
         <Table className="w-full border-separate border-spacing-y-2">
           <TableBody>
-            {users.map((user, index) => {
+            {users.map((user, index: number) => {
               const posicao = index + 1;
               const imageUrl = imageUrls[index];
 
@@ -155,21 +166,7 @@ export function RankingTable() {
                   setOpenUserDialog(true);
                 }}>
                   <TableCell className="border-y-2 border-l-2 rounded-l-sm w-12 text-center align-middle py-0">
-                    {posicao <= 3 ? (
-                      <div
-                        className="size-6 sm:size-10 md:size-12 lg:size-14 bg-contain bg-no-repeat bg-center flex items-center justify-center text-white"
-                        style={{ backgroundImage: `url('/rank_${posicao}.svg')` }}
-                      >
-                        {posicao}°
-                      </div>
-                    ) : (
-                      <div
-                        className="size-6 sm:size-10 md:size-12 lg:size-14 bg-contain bg-no-repeat bg-center flex items-center justify-center text-white"
-                        style={{ backgroundImage: "url('/rank_4.svg')" }}
-                      >
-                        {posicao}°
-                      </div>
-                    )}
+                    <RankBadge posicao={posicao} /> {/* Usando o novo componente */}
                   </TableCell>
                   <TableCell className="border-y-2 py-0">
                     <Avatar className="rounded-full">
@@ -193,8 +190,8 @@ export function RankingTable() {
               );
             })}
 
-            {/* Loader */}
-            {isFetching && (
+            {/* Loader para carregamento inicial ou mais páginas */}
+            {(isFetching || isFetchingNextPage) && ( // isFetching cobre o estado inicial também
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-2">
                   Carregando...
@@ -202,12 +199,14 @@ export function RankingTable() {
               </TableRow>
             )}
 
-            {/* Elemento alvo para IntersectionObserver */}
-            <TableRow>
-              <TableCell colSpan={4}>
-                <div ref={observerRef} className="h-2 w-full" />
-              </TableCell>
-            </TableRow>
+            {/* Elemento alvo para IntersectionObserver - apenas se houver mais páginas */}
+            {hasNextPage && (
+              <TableRow>
+                <TableCell colSpan={4}>
+                  <div ref={observerRef} className="h-2 w-full" />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
@@ -224,9 +223,9 @@ export function RankingTable() {
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <div className="space-y-2">
+          <div className="space-y-2 flex flex-col items-center">
             <Button
-              className="w-full"
+              className="w-2/3 bg-gray-button"
               onClick={() => {
                 if (selectedUser) {
                   router.push(`/usuarios/${selectedUser.id}/informacoes`);
@@ -238,11 +237,10 @@ export function RankingTable() {
 
             <Button
               variant="destructive"
-              className="w-full"
+              className="w-2/3 "
               onClick={() => {
-                setUserToDelete(selectedUser);
-                setOpenUserDialog(false);
-                setOpenDeleteDialog(true); // abre a modal de confirmação de exclusão
+                setOpenUserDialog(false); // Fecha o modal de ações
+                setOpenDeleteDialog(true); // Abre o modal de confirmação de exclusão
               }}
             >
               Deletar colaborador
@@ -256,19 +254,19 @@ export function RankingTable() {
           <AlertDialogHeader>
             <AlertDialogTitle>Deseja realmente excluir?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não poderá ser desfeita. Tem certeza que deseja excluir <strong>{userToDelete?.nome}</strong>?
+              Esta ação não poderá ser desfeita. Tem certeza que deseja excluir <strong>{selectedUser?.nome}</strong>?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setOpenDeleteDialog(false)}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (userToDelete?.id) {
-                  mutate(userToDelete.id);
+                if (selectedUser?.id) {
+                  mutate(selectedUser.id);
                 }
               }}
               disabled={isPending}>
-              Confirmar
+              {isPending ? "Excluindo..." : "Confirmar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

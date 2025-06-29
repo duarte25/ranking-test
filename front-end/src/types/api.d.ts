@@ -1,21 +1,24 @@
 export type ApiError<T = unknown> = {
-    path?: keyof T; // Opcionalmente, pode ser uma chave do tipo T
-    message: string;
-  } | string;
-  
-  export interface ApiResponse<T, isArray extends boolean = false> {
-    totalPaginas?: number;
-    code: number;
-    error: boolean;
-    errors: ApiError[] | [];
-    message: string;
-    data: isArray extends true ? T[] | [] : T;
-  }
-  
-  export interface FetchApiProps<T> {
-    route: string;
-    method: "GET" | "POST" | "PATCH" | "DELETE";
-    data?: T | null;
-    token?: string;
-    nextOptions?: NextFetchRequestConfig;
-  }
+  path?: keyof T; // Opcionalmente, pode ser uma chave do tipo T
+  message: string;
+} | string;
+
+export interface ApiResponse<T, isArray extends boolean = false> {
+  totalPaginas?: number;
+  limite?: number;
+  pagina?: number;
+  resultados?: number;
+  code: number;
+  error: boolean;
+  errors: ApiError[] | [];
+  message: string;
+  data: isArray extends true ? T[] | [] : T;
+}
+
+export interface FetchApiProps<T> {
+  route: string;
+  method: "GET" | "POST" | "PATCH" | "DELETE";
+  data?: T | null;
+  token?: string;
+  nextOptions?: NextFetchRequestConfig;
+}

@@ -14,7 +14,10 @@ export interface ApiErrorQuery {
   message: string;
   errors: string[];
   code: number;
-  data: unknown[]; 
+  data: unknown[];
+  limite?: number;
+  pagina?: number;
+  totalPaginas?: number;
 }
 
 export async function fetchUseQuery<RequestData, ResponseData>({
