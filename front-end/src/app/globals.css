@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-gray-button: var(--acmn-gray-button);
   --color-gray-bar: var(--acme-gray-color);
   --color-gray-font: var(--acme-gray-font);
   --color-background: var(--background);
@@ -64,6 +65,7 @@ body {
 }
 
 :root {
+  --acmn-gray-button: oklch(0.5685 0.0618 263.42);
   --acme-gray-font: oklch(0.29 0.10 260);
   --acme-gray-color: oklch(0.29 0.10 260 / 0.1);
   --radius: 0.625rem;

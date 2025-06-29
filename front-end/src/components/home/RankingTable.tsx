@@ -14,12 +14,16 @@ import {
 } from "@radix-ui/react-avatar";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
+import { PopUpRegister } from "./PopUpRegister";
+import { Plus } from "lucide-react";
 
 export function RankingTable() {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<ViewUserData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [cadastrarUsuarioOpen, setCadastrarUsuarioOpen] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -44,12 +48,27 @@ export function RankingTable() {
     enabled: currentPage <= totalPages,
   });
 
-  // Concatena os dados das páginas
   useEffect(() => {
-    if (data && !isLoading) {
-      setUsers((prev) => [...prev, ...data]);
+    if (currentPage === 1) {
+      setUsers([]); // Reseta a lista
     }
-  }, [data, isLoading]);
+  }, [currentPage]);
+
+useEffect(() => {
+  if (data) {
+    setUsers((prev) => {
+      if (currentPage === 1) return data;
+
+      const merged = [...prev, ...data];
+      const uniqueMap = new Map();
+      for (const user of merged) {
+        uniqueMap.set(user.id, user);
+      }
+      return Array.from(uniqueMap.values());
+    });
+  }
+}, [data, currentPage]);
+
 
   // Observa o último elemento para carregar mais dados
   useEffect(() => {
@@ -76,7 +95,10 @@ export function RankingTable() {
   }, [isFetching, currentPage, totalPages]);
 
   return (
-    <div className="w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain bg-no-repeat bg-center flex items-center justify-center pt-12">
+    <div className="flex flex-col w-2/6 aspect-[3/3] bg-[url('/tabela_pontuacao.svg')] bg-contain bg-no-repeat bg-center items-center justify-center pt-12">
+      <PopUpRegister open={cadastrarUsuarioOpen}
+        onOpenChange={setCadastrarUsuarioOpen} />
+
       <div className="w-3/5 rounded h-[40vh] overflow-y-auto">
         <Table className="w-full pt-24 border-separate border-spacing-y-2">
           <TableBody>
@@ -145,6 +167,7 @@ export function RankingTable() {
           </TableBody>
         </Table>
       </div>
+      <Button type="button" className="bg-gray-button" onClick={() => setCadastrarUsuarioOpen(true)}> <Plus /> NOVO COLABORADOR</Button>
     </div>
   );
 }
