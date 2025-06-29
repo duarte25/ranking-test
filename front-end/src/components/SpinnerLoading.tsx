@@ -12,7 +12,10 @@ export default function SpinnerLoading({ className, ...props }: SpinnerLoadingPr
     >
       <div className="w-full flex justify-center my-2">
         <svg
-          className="animate-spin -ml-1 mr-3 h-10 w-10 text-secondary"
+          className={cn(
+            "animate-spin -ml-1 mr-3 h-10 w-10",
+            className ? className : "text-secondary"
+          )}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

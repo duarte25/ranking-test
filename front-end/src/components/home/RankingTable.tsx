@@ -15,6 +15,7 @@ import { Plus, Star } from "lucide-react";
 import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import SpinnerLoading from "../SpinnerLoading";
 
 function RankBadge({ posicao }: { posicao: number }) {
   const imageUrl = `/rank_${posicao <= 3 ? posicao : 4}.svg`;
@@ -194,7 +195,7 @@ export function RankingTable() {
             {(isFetching || isFetchingNextPage) && ( // isFetching cobre o estado inicial também
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-2">
-                  Carregando...
+                  <SpinnerLoading className="text-black" />
                 </TableCell>
               </TableRow>
             )}

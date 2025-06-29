@@ -1,30 +1,25 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateScoreData, ViewScoreData } from "@/api/models/Score";
 import { handleErrorMessages } from "@/errors/handleErrorMessage";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchUseQuery } from "@/api/services/fetchUseQuery";
 import { ScoreSchemas } from "@/schemas/ScoreSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ComboboxDebounce from "../ComboboxDebounce";
-import { fetchApi } from "@/api/services/fetchApi";
 import { ViewUserData } from "@/api/models/User";
+import SpinnerLoading from "../SpinnerLoading";
 import ButtonLoading from "../ButtonLoading";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { ApiResponse } from "@/types/api";
 import { toast } from "react-toastify";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import Image from "next/image";
 import { z } from "zod";
-import SpinnerLoading from "../SpinnerLoading";
 
 type InputDialogProps = {
   open: boolean;
@@ -42,7 +37,7 @@ export function PopUpAlterScore({
   const { data } = useQuery<ViewScoreData>({
     queryKey: ["userInfo"],
     queryFn: async () => {
-      const response = await fetchApi<any, any>({
+      const response = await fetchUseQuery<any, any>({
         route: `/scores/${idScore}`,
         method: "GET",
         nextOptions: {},
@@ -73,24 +68,31 @@ export function PopUpAlterScore({
     }
   }, [data]);
 
-  async function handleCadastrar(data: z.infer<typeof schema>) {
-    const response = await fetchApi<typeof data, CreateScoreData>({
-      route: `/scores/${idScore}`,
-      method: "PATCH",
-      data: data,
-    });
+  const mutation = useMutation<ApiResponse<CreateScoreData>, unknown, z.infer<typeof schema>>({
+    mutationFn: async (data: z.infer<typeof schema>): Promise<ApiResponse<CreateScoreData>> => {
+      return await fetchUseQuery<typeof data, CreateScoreData>({
+        route: `/scores/${idScore}`,
+        method: "PATCH",
+        data,
+      });
+    },
 
-    if (response.error && response.errors) {
-      handleErrorMessages(response.errors);
-      return;
-    }
+    onSuccess: (response: ApiResponse<CreateScoreData, false>) => {
+      if (response.error && response.errors) {
+        handleErrorMessages(response.errors);
+        return;
+      }
+      queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
+      queryClient.invalidateQueries({ queryKey: ["listUser"] });
+      queryClient.invalidateQueries({ queryKey: ["getUserScore"] });
+      toast.success("Pontuação atualizada com sucesso!");
+      onOpenChange(false);
+      formScore.reset();
+    },
+  });
 
-    queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
-    queryClient.invalidateQueries({ queryKey: ["listUser"] });
-    queryClient.invalidateQueries({ queryKey: ["getUserScore"] });
-    toast.success("Pontuação atualizada com sucesso!");
-    onOpenChange(false);
-    formScore.reset();
+  function onSubmit(data: z.infer<typeof schema>) {
+    mutation.mutate(data);
   }
 
   const [users, setUsers] = useState<ViewUserData | null>(null);
@@ -114,7 +116,7 @@ export function PopUpAlterScore({
             <DialogTitle>Editar Pontos</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={formScore.handleSubmit(handleCadastrar)}
+          <form onSubmit={formScore.handleSubmit(onSubmit)}
             className="space-y-4"
           >
             <FormField
