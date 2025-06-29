@@ -51,22 +51,75 @@ export class ScoreRepository {
   }
 
   static async alterScore(id: string, scoreData: Partial<CreateScoreData>): Promise<ViewScoreData> {
+    const { usuario_id, pontos, ...restScoreData } = scoreData;
 
-    const { usuario_id, ...restScoreData } = scoreData;
+    return await prisma.$transaction(async (tx) => {
+      // Buscar a pontuação atual
+      const scoreAtual = await tx.pontuacao.findUnique({
+        where: { id },
+      });
 
-    return await prisma.pontuacao.update({
-      where: { id },
-      data: {
-        ...restScoreData,
-        usuario: {
-          connect: { id: usuario_id }
-        },
-      },
-      include: {
-        usuario: true,
+      if (!scoreAtual) {
+        throw new APIError("Pontuação não encontrada", 404);
       }
+
+      const usuarioAntigoId = scoreAtual.usuario_id;
+      const usuarioNovoId = usuario_id ?? usuarioAntigoId;
+
+      // Atualizar a pontuação
+      const novaPontuacao = await tx.pontuacao.update({
+        where: { id },
+        data: {
+          ...restScoreData,
+          pontos,
+          usuario: usuario_id ? { connect: { id: usuario_id } } : undefined,
+        },
+        include: { usuario: true },
+      });
+
+      // Se pontos foram atualizados, ajusta pontuação nos usuários
+      if (typeof pontos === 'number') {
+        const diferenca = pontos - scoreAtual.pontos;
+
+        // Se trocou o usuário:
+        if (usuario_id && usuario_id !== usuarioAntigoId) {
+          // Remover do usuário antigo
+          await tx.usuario.update({
+            where: { id: usuarioAntigoId },
+            data: {
+              pontuacao: {
+                decrement: scoreAtual.pontos,
+              },
+            },
+          });
+
+          // Adicionar ao novo
+          await tx.usuario.update({
+            where: { id: usuario_id },
+            data: {
+              pontuacao: {
+                increment: pontos,
+              },
+            },
+          });
+
+        } else {
+          // Mesmo usuário: apenas incrementa a diferença
+          await tx.usuario.update({
+            where: { id: usuarioNovoId },
+            data: {
+              pontuacao: {
+                increment: diferenca,
+              },
+            },
+          });
+        }
+      }
+
+      return novaPontuacao;
     });
   }
+
 
   static async deleteScoreById(id: string): Promise<ViewScoreData> {
     return await prisma.$transaction(async (tx) => {
@@ -99,5 +152,4 @@ export class ScoreRepository {
       return deletedScore;
     });
   }
-
 }

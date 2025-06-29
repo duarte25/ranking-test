@@ -1,7 +1,7 @@
 "use client";
 
 import ContainerPageContent from "@/components/ContainerPageContentProps";
-import DataTableCompanies from "@/components/Users/DataTableUsers";
+import DataTableUserScore from "@/components/Users/DataTableUsers";
 import { PopUpAlterUser } from "@/components/Users/PopUpAlterUser";
 import GetTableDataComponent from "@/components/GetTableData";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export default function UserScore() {
         onOpenChange={setAlterUsuarioOpen} slug={slug} />
 
       <GetTableDataComponent
-        TableComponent={DataTableCompanies}
+        TableComponent={DataTableUserScore}
         fetchTag={"getUserScore"}
         route={`/scores?idUsuario=${slug}`}
       />

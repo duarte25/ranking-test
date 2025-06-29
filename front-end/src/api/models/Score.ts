@@ -1,9 +1,11 @@
+import { ViewUserData } from "./User";
 
 export interface ViewScoreData {
   id: string;
   motivo: string;
-  pontos: string;
+  pontos: number;
   usuario_id: string ;
+  usuario: ViewUserData;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -3,29 +3,27 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { UserSchemas } from "@/schemas/UserSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { handleErrorMessages } from "@/errors/handleErrorMessage";
-import { Input } from "../ui/input";
-import ButtonLoading from "../ButtonLoading";
-import { fetchUseQuery } from "@/api/services/fetchUseQuery";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateUserData, ViewUserData } from "@/api/models/User";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "../ui/button";
-import { fetchApi } from "@/api/services/fetchApi";
-import { z } from "zod";
+import { fetchUseQuery } from "@/api/services/fetchUseQuery";
 import { fetchPhotoApi } from "@/api/services/fetchPhoto";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { UserSchemas } from "@/schemas/UserSchemas";
+import { fetchApi } from "@/api/services/fetchApi";
+import ButtonLoading from "../ButtonLoading";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "../ui/button";
 import { toast } from "react-toastify";
+import { Input } from "../ui/input";
+import Image from "next/image";
+import { z } from "zod";
 
 type InputDialogProps = {
   open: boolean;

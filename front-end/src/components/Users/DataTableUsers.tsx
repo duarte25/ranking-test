@@ -11,6 +11,7 @@ import { MoreHorizontal } from "lucide-react";
 import { ApiResponse } from "@/types/api";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import { PopUpAlterScore } from "./PopUpAlterScore";
 
 interface DataTableScoresProps {
   dados: ApiResponse<string>;
@@ -20,6 +21,8 @@ interface DataTableScoresProps {
 export default function DataTableUserScore({ dados, onUpdate }: DataTableScoresProps) {
   const [open, setOpen] = useState(false);
   const [scoreToDelete, setScoreToDelete] = useState<ViewScoreData | null>(null);
+  const [alterScoreOpen, setAlterScoreOpen] = useState(false);
+  const [scoreId, setScoreId] = useState<string | null>(null);
 
   const handleDelete = async () => {
     if (!scoreToDelete) return;
@@ -70,7 +73,7 @@ export default function DataTableUserScore({ dados, onUpdate }: DataTableScoresP
             <TableHead className="text-white"></TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody  className="text-white">
+        <TableBody className="text-white">
           {Array.isArray(dados) &&
             dados.map((scores: ViewScoreData) => (
               <TableRow key={scores?.id} >
@@ -91,6 +94,11 @@ export default function DataTableUserScore({ dados, onUpdate }: DataTableScoresP
                           Deletar pontos
                         </span>
                       </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <span className="cursor-pointer" onClick={() => { setScoreId(scores.id); setAlterScoreOpen(true); }}>
+                          Editar pontos
+                        </span>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -98,6 +106,17 @@ export default function DataTableUserScore({ dados, onUpdate }: DataTableScoresP
             ))}
         </TableBody>
       </Table>
+
+      {scoreId && (
+        <PopUpAlterScore
+          open={alterScoreOpen}
+          onOpenChange={(open) => {
+            setAlterScoreOpen(open);
+            if (!open) setScoreId(null); // limpa o scoreId ao fechar
+          }}
+          idScore={scoreId}
+        />
+      )}
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
