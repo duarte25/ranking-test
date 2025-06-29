@@ -67,10 +67,7 @@ export function PopUpRegisterScore({
 
   const [users, setUsers] = useState<ViewUserData | null>(null);
 
-  // console.log("OLHA O ERRO", formScore.formState.errors)
-
   return (
-
     <Form {...formScore}>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
@@ -81,33 +78,6 @@ export function PopUpRegisterScore({
           <form onSubmit={formScore.handleSubmit(handleCadastrar)}
             className="space-y-4"
           >
-            <FormField
-              control={formScore.control}
-              name="motivo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Motivo <span className="text-red-600">*</span></FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={formScore.control}
-              name="pontos"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pontos <span className="text-red-600">*</span></FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={formScore.control}
               name="usuario_id"
@@ -143,6 +113,32 @@ export function PopUpRegisterScore({
                   </FormItem>
                 );
               }}
+            />
+            <FormField
+              control={formScore.control}
+              name="motivo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Motivo <span className="text-red-600">*</span></FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={formScore.control}
+              name="pontos"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pontos <span className="text-red-600">*</span></FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <DialogFooter>
               <Button className="border-gray-button border-2 bg-white font-bold h-10 text-gray-button" onClick={() => onOpenChange(false)} type="submit" >

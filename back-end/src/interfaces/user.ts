@@ -19,6 +19,7 @@ export interface ViewUserData {
 export interface ListUsersParams {
   pagina: number;
   limite: number;
+  nome?: string;
 }
 
 interface foto {

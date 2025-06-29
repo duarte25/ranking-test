@@ -18,6 +18,7 @@ import { Button } from "../ui/button";
 import { PopUpRegister } from "./PopUpRegisterUser";
 import { Plus, Star } from "lucide-react";
 import { PopUpRegisterScore } from "./PopUpRegisterScore";
+import Link from "next/link";
 
 export function RankingTable() {
   const [totalPages, setTotalPages] = useState(1);
@@ -107,6 +108,7 @@ export function RankingTable() {
           <TableBody>
             {users.map((user, index) => {
               const posicao = index + 1;
+              const userUrl = `/usuarios/${user.id}/informacoes`;
 
               return (
                 <TableRow key={user.id}>
@@ -129,24 +131,28 @@ export function RankingTable() {
                   </TableCell>
 
                   <TableCell className="border-y-2 py-0">
-                    <Avatar className="rounded-full">
-                      <AvatarImage
-                        src={
-                          convertBytesToImageUrl(user.foto?.imagem) ||
-                          "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png "
-                        }
-                        alt="Usuário"
-                        className="object-cover rounded-full size-6 sm:size-10 md:size-12 lg:size-12"
-                      />
-                      <AvatarFallback className="rounded-md text-gray-font font-bold">
-                        Usuário
-                      </AvatarFallback>
-                    </Avatar>
+                    <Link href={userUrl} className="block w-full h-full">
+                      <Avatar className="rounded-full">
+                        <AvatarImage
+                          src={
+                            convertBytesToImageUrl(user.foto?.imagem) ||
+                            "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png "
+                          }
+                          alt="Usuário"
+                          className="object-cover rounded-full size-6 sm:size-10 md:size-12 lg:size-12"
+                        />
+                        <AvatarFallback className="rounded-md text-gray-font font-bold">
+                          Usuário
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
                   </TableCell>
 
-                  <TableCell className="border-y-2">{user.nome}</TableCell>
+                  <TableCell className="border-y-2">
+                    <Link href={userUrl} className="block w-full h-full">{user.nome}</Link>
+                  </TableCell>
                   <TableCell className="border-y-2 border-r-2 rounded-r-sm text-gray-font font-bold py-0">
-                    {user.pontuacao}
+                    <Link href={userUrl} className="block w-full h-full"> {user.pontuacao}</Link>
                   </TableCell>
                 </TableRow>
               );

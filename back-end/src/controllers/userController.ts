@@ -13,7 +13,8 @@ export default class UserController {
 
     const params: ListUsersParams = {
       pagina,
-      limite
+      limite,
+      nome: req.query.nome as string | undefined
     };
 
     const result = await UserService.listUsers(params);

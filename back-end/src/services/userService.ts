@@ -8,9 +8,13 @@ export class UserService {
   static async listUsers(
     params: ListUsersParams
   ) {
-    const { pagina, limite } = params;
+    const { pagina, limite, nome } = params;
 
     const where: Record<string, any> = {};
+
+    if (nome) {
+      where.nome = { contains: nome, mode: "insensitive" };
+    }
 
     return await UserRepository.listUsers(where, {
       page: pagina,
@@ -25,9 +29,9 @@ export class UserService {
     });
   }
 
-   static async listFirstRankUser() {
+  static async listFirstRankUser() {
 
-    return await UserRepository.listFirstRankUser()   
+    return await UserRepository.listFirstRankUser()
   }
 
   static async createUser(userData: CreateUserData): Promise<ViewUserData> {
