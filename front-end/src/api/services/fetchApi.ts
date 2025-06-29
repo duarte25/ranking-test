@@ -18,12 +18,12 @@ export async function fetchApi<RequestData, ResponseData>({
   nextOptions,
 }: FetchApiProps<RequestData | FormData>): Promise<ApiResponse<ResponseData>> {
   try {
-    // let bearerToken = token || undefined;
+    let bearerToken = token || undefined;
 
-    // if (!bearerToken && typeof window === "undefined") {
-    //   const token = await getCookie("accessToken");
-    //   bearerToken = token?.value;
-    // }
+    if (!bearerToken && typeof window === "undefined") {
+      const token = await getCookie("accessToken");
+      bearerToken = token?.value;
+    }
 
     const urlApi = getApiUrlEnv();
     let body: BodyInit | null = null;
@@ -44,7 +44,7 @@ export async function fetchApi<RequestData, ResponseData>({
 
     // Headers padrão
     const headers: HeadersInit = {
-      // Authorization: `Bearer ${bearerToken}`,
+      Authorization: `Bearer ${bearerToken}`,
       accept: "application/json",
     };
 

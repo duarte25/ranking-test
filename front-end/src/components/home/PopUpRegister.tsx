@@ -23,6 +23,7 @@ import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { handleErrorMessages } from "@/errors/handleErrorMessage";
 import { fetchApi } from "@/api/services/fetchApi";
+import { useQueryClient } from "@tanstack/react-query";
 
 type InputDialogProps = {
   open: boolean;
@@ -33,7 +34,7 @@ export function PopUpRegister({
   open,
   onOpenChange
 }: InputDialogProps) {
-
+  const queryClient = useQueryClient();
   const schema = UserSchemas.criar;
 
   const formUser = useForm<z.infer<typeof schema>>({
@@ -53,7 +54,7 @@ export function PopUpRegister({
       if (data.imagem) {
         const formData = new FormData();
         formData.append("imagem", data.imagem);
-        
+
         console.log("FormData:", formData.get("imagem"));
 
         const responseImagem = await fetchApi<{ image_id: string }, any>({
@@ -87,6 +88,7 @@ export function PopUpRegister({
       }
 
       // fecha reseta form user e o preview de imagem
+      queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
       onOpenChange(false);
       formUser.reset();
       setPreviewImage(null);
@@ -191,7 +193,7 @@ export function PopUpRegister({
               <Button className="border-gray-button border-2 bg-white font-bold h-10 text-gray-button" onClick={() => onOpenChange(false)} type="submit" >
                 Cancelar
               </Button>
-              <ButtonLoading className="bg-gray-button font-bold h-10" isLoading={formUser.formState.isSubmitting} type="submit" >
+              <ButtonLoading className="bg-gray-button font-bold h-10" isLoading={formUser.formState.isSubmitting}>
                 Confirmar
               </ButtonLoading>
             </DialogFooter>
