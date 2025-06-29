@@ -7,3 +7,11 @@ export interface ViewScoreData {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface CreateScoreData {
+  usuario_id: string;
+  pontos: number;
+  motivo: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

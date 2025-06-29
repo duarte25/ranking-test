@@ -15,8 +15,9 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { PopUpRegister } from "./PopUpRegister";
+import { PopUpRegister } from "./PopUpRegisterUser";
 import { Plus, Star } from "lucide-react";
+import { PopUpRegisterScore } from "./PopUpRegisterScore";
 
 export function RankingTable() {
   const [totalPages, setTotalPages] = useState(1);
@@ -98,6 +99,9 @@ export function RankingTable() {
       <PopUpRegister open={cadastrarUsuarioOpen}
         onOpenChange={setCadastrarUsuarioOpen} />
 
+      <PopUpRegisterScore open={cadastrarPontoOpen}
+        onOpenChange={setCadastrarPontoOpen} />
+
       <div className="w-3/5 rounded h-[40vh] overflow-y-auto">
         <Table className="w-full border-separate border-spacing-y-2">
           <TableBody>
@@ -170,7 +174,7 @@ export function RankingTable() {
         <Button type="button" className="bg-gray-button" onClick={() => setCadastrarUsuarioOpen(true)}>
           <Plus /> NOVO COLABORADOR
         </Button>
-        <Button type="button" className="bg-gray-button" onClick={() => setCadastrarUsuarioOpen(true)}>
+        <Button type="button" className="bg-gray-button" onClick={() => setCadastrarPontoOpen(true)}>
           <Star /> ATRIBUIR PONTOS
         </Button>
       </div>

@@ -89,6 +89,7 @@ export function PopUpRegister({
 
       // fecha reseta form user e o preview de imagem
       queryClient.invalidateQueries({ queryKey: ["firsrtRank"] });
+      queryClient.invalidateQueries({ queryKey: ["listUser"] });
       onOpenChange(false);
       formUser.reset();
       setPreviewImage(null);
