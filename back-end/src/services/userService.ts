@@ -13,7 +13,7 @@ export class UserService {
     const where: Record<string, any> = {};
 
     if (nome) {
-      where.nome = { contains: nome, mode: "insensitive" };
+      where.nome = { contains: nome };
     }
 
     return await UserRepository.listUsers(where, {

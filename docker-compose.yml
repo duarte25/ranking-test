@@ -1,0 +1,52 @@
+services:
+  # Serviço do Frontend
+  ranking-front:
+    build:
+      context: ./front-end # O contexto agora aponta para a pasta do frontend
+    container_name: ranking-front
+    ports:
+      - "3000:3000" # Mapeia a porta 3000 do host para a porta 3000 do container
+    networks:
+      - app-network # Conecta ao network compartilhado
+
+  # Serviço do Backend
+  ranking-back:
+    build:
+      context: ./back-end # O contexto agora aponta para a pasta do backend
+    container_name: ranking-back
+    ports:
+      - "3020:3020" # Mapeia a porta 3020 do host para a porta 3020 do container
+    networks:
+      - app-network # Conecta ao network compartilhado
+    restart: unless-stopped # Reinicia o container se ele parar inesperadamente
+    environment:
+      # Variáveis de ambiente para o backend se conectar ao MySQL
+      # O hostname 'banco-mysql-ranking' é o nome do serviço do banco de dados no Docker Compose
+      DATAURL: "mysql://user_ranking:fslab@banco-mysql-ranking:3306/db_ranking"
+
+  # Serviço do Banco de Dados MySQL
+  banco-mysql-ranking:
+    image: mysql:8 # Imagem oficial do MySQL versão 8
+    restart: unless-stopped # Reinicia o container se ele parar inesperadamente
+    container_name: banco-mysql-ranking
+    environment:
+      # Variáveis de ambiente para configurar o MySQL
+      MYSQL_ROOT_PASSWORD: fslab # Senha do usuário root
+      MYSQL_DATABASE: db_ranking # Nome do banco de dados a ser criado
+      MYSQL_USER: user_ranking # Nome de usuário para o banco de dados
+      MYSQL_PASSWORD: fslab # Senha para o usuário
+    ports:
+      - "3307:3306" # Mapeia a porta 3307 do host para a porta padrão do MySQL (3306) no container
+    volumes:
+      - volume-mysql:/var/lib/mysql # Persistência dos dados do MySQL em um volume nomeado
+    networks:
+      - app-network # Conecta ao network compartilhado
+
+# Definição dos volumes
+volumes:
+  volume-mysql: # Volume nomeado para persistir os dados do MySQL
+
+# Definição das redes
+networks:
+  app-network:
+    driver: bridge # Cria uma rede bridge para que os containers possam se comunicar
