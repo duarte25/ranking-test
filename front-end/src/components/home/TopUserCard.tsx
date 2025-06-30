@@ -49,7 +49,9 @@ export function TopUserCard({ dataFirtsRank, isLoading }: TopUserCardProps) {
             {Array.isArray(dataFirtsRank?.lastScores) &&
               dataFirtsRank.lastScores.map((score: ViewLastScores, index: number) => (
                 <div className="flex justify-between bg-gray-bar p-2 rounded-sm" key={index}>
-                  <span className="text-gray-font font-medium truncate">{score?.motivo}</span>
+                  <span className="text-gray-font font-medium truncate">
+                    {score?.motivo?.length > 20 ? `${score.motivo.slice(0, 20)}...` : score?.motivo}
+                  </span>
                   <span
                     className={`font-extrabold truncate text-right ${Number(score?.pontos) > 0
                       ? "text-[#779C65]"
