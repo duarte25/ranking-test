@@ -1,79 +1,55 @@
-# Teste Técnico - Vaga Programador Fullstack
+#  Ranking-Cooperadores
 
-## Briefing do Cliente
-
-Aqui na nossa empresa estamos querendo criar um sistema simples, mas eficiente, para valorizar os colaboradores que mais se destacam ao longo do mês.
-
-A ideia é ter um **ranking de funcionários**, tipo aqueles "Funcionário do Mês", mas com uma abordagem mais flexível. Cada colaborador vai ganhando pontos conforme algumas ações que eles realizam: pode ser uma entrega de projeto, um feedback positivo de um cliente, um resultado de vendas, etc.
-
-Queremos algo bem visual, onde possamos:
-
-- Ver a lista dos colaboradores com a **posição no ranking** (1º, 2º, 3º...).
-- Ter uma página com o **detalhamento de cada colaborador**, mostrando a pontuação total e um histórico de tudo que ele fez para chegar naquela pontuação.
-- Ter um painel administrativo onde a gente consiga:
-
-  ✅ **Cadastrar novos colaboradores**  
-  ✅ **Editar dados dos colaboradores**  
-  ✅ **Deletar colaboradores (se sair da empresa, por exemplo)**  
-  ✅ **Atribuir novos pontos para cada colaborador**, informando o motivo e quantos pontos ele ganhou  
-  ✅ **Editar ou excluir essas atribuições de pontos**, caso alguém registre errado  
+## 🗂️ Índice  
+1. [Descrição](#-descrição)  
+2. [Tecnologias Utilizadas](#-tecnologias-utilizadas)  
+3. [Funcionalidades da Aplicação](#️-funcionalidades-da-aplicação)  
+4. [Como Utilizar](#-como-utilizar)  
+5. [Desenvolvedores](#-desenvolvedores)  
 
 ---
 
-## Stack Obrigatória
-
-- **Frontend:** ReactJS
-- **Backend:** Node.js com Express
-- **Banco de Dados:** MySQL
+## 📄 Descrição  
+Este projeto desenvolveu uma aplicação para gestão de ranking por pontuação de cooperadores dentro de um ambiente empresarial.
 
 ---
 
-## Design de Referência (Opcional)
+## 💻 Tecnologias Utilizadas  
 
-O candidato pode, se desejar, utilizar o design sugerido abaixo:
-
-- **Link do Figma:**  
-[https://www.figma.com/design/mWfpmpaVX69ytYd3YGVGiM/CRUD-para-Teste?node-id=3-4803&t=qDpcZTPe7LDVZoXV-1](https://www.figma.com/design/mWfpmpaVX69ytYd3YGVGiM/CRUD-para-Teste?node-id=3-4803&t=qDpcZTPe7LDVZoXV-1)
-
-- **Senha de Acesso:**  
-`cache-ozone-pan-rage`
+![TS](https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF&style=flat-square) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white) ![Express](https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=fff&style=flat) ![React](https://img.shields.io/badge/-React-45b8d8?style=flat-square&logo=react&logoColor=white) ![Next](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 
 ---
 
-## Requisitos Não Funcionais / Extras
+## ⚙️ Funcionalidades da Aplicação  
 
-- Uso de **migrations** ou scripts SQL para criação das tabelas.
-- Separação clara entre frontend e backend (monorepo ou projetos separados, mas bem organizados).
-- Código limpo, bem comentado e organizado.
-- README com:
-  - Instruções para rodar o backend e o frontend.
-  - Como criar o banco de dados.
-  - Scripts de inicialização.
+### *1. Ranking de cooperadores*  
+- Conseguimos visualizar na página inicial o ranking de todos os cooperadores e o top 1 do rank destacado.
+- Ao clicar em um usuário temos a opção de ir para visualizar as informações deste usuário ou deletarmos ele.
 
----
-
-## Processo de Entrega
-
-- O projeto será disponibilizado no **Github** (repositório base).
-- O candidato deverá fazer um **Fork**.
-- O desenvolvimento deve ser feito com o repositório **público**.
-- O prazo de entrega será definido após o envio desta tarefa.
-- Após o prazo:
-  - Faremos uma **revisão técnica do código**.
-  - Marcaremos uma **conversa técnica** com o candidato para entender as decisões tomadas.
+### *2. Possibilidades*  
+- Conseguimos editar, deletar, alterar usuário e pontuação.
 
 ---
 
-## Critérios de Avaliação
+## 📚 Como Utilizar  
 
-- Estrutura e organização de código.
-- Qualidade das rotas e da API.
-- Modelagem de dados.
-- Qualidade do frontend (UX e UI).
-- Boas práticas de REST.
-- Qualidade de documentação.
-- Uso de Git (commits claros e progressivos).
-- Tratamento de erros.
-- Clareza no fluxo de dados entre frontend, backend e banco de dados.
+### Pré-requisitos
+
+- Configurar as variáveis de ambiente.
+
+### Passos para Execução
+
+#### *1. Rode o comando abaixo:*
+
+docker compose up --build -d
+
+docker exec -it ranking-back sh 
+
+npx prisma migrate deploy
 
 ---
+
+## 👥 Desenvolvedores  
+| [![Duarte](https://github.com/duarte25.png?size=120)](https://github.com/duarte25) |
+|:------------------------------------------------------------------------------------------------:|
+| [Gustavo Duarte](https://github.com/duarte25) |

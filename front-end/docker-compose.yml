@@ -1,0 +1,19 @@
+services:
+  ranking-front:
+    build:
+      context: ./
+    container_name: ranking-front
+    ports:
+      - "3022:3022"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+    driver: local
+  vol-db:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
