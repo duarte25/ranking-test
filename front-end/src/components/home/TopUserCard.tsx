@@ -1,7 +1,7 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { ViewFirtsRank, ViewLastScores } from "@/api/models/User";
 import { convertBytesToImageUrl } from "@/utils/convertImage";
 import SpinnerLoading from "../SpinnerLoading";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface TopUserCardProps {
   dataFirtsRank: ViewFirtsRank | undefined;
@@ -65,7 +65,7 @@ export function TopUserCard({ dataFirtsRank, isLoading }: TopUserCardProps) {
               ))}
           </div>
         </div>
-        )}
+      )}
     </div>
   );
 }
