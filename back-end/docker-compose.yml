@@ -14,15 +14,15 @@ services:
     networks:
       - app-network
 
-  # ranking-back:
-  #   build:
-  #     context: ./
-  #   container_name: integra-back
-  #   ports:
-  #     - "3020:3020"
-  #   networks:
-  #     - app-network
-  #   restart: unless-stopped
+  ranking-back:
+    build:
+      context: ./
+    container_name: ranking-back
+    ports:
+      - "3020:3020"
+    networks:
+      - app-network
+    restart: unless-stopped
 
 volumes:
   volume-sql:
