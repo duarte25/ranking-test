@@ -1,16 +1,18 @@
+# docker-compose.yml
 services:
-  banco-postgresql-ranking:
-    image: postgres:13
+  banco-mysql-ranking: # Nome do serviço alterado para refletir MySQL
+    image: mysql:8 # Imagem do MySQL
     restart: unless-stopped
-    container_name: banco-postgresql-ranking
+    container_name: banco-mysql-ranking
     environment:
-      POSTGRES_PASSWORD: fslab
-      POSTGRES_DB: db_ranking
-      POSTGRES_USER: postgres
+      MYSQL_ROOT_PASSWORD: fslab # Senha do usuário root do MySQL
+      MYSQL_DATABASE: db_ranking # Nome do banco de dados
+      MYSQL_USER: user_ranking # Nome de usuário para o banco de dados (pode ser o mesmo que o root se preferir, mas é boa prática ter um usuário específico)
+      MYSQL_PASSWORD: fslab # Senha para o usuário user_ranking
     ports:
-      - "5433:5432"
+      - "3307:3306" # Porta externa 3307 mapeada para a porta padrão do MySQL 3306
     volumes:
-      - volume-sql:/var/lib/postgresql/data
+      - volume-mysql:/var/lib/mysql # Volume para persistência dos dados do MySQL
     networks:
       - app-network
 
@@ -23,9 +25,11 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+    environment:
+      DATAURL: "mysql://user_ranking:fslab@banco-mysql-ranking:3306/db_ranking"
 
 volumes:
-  volume-sql:
+  volume-mysql: # Volume renomeado para refletir MySQL
 
 networks:
   app-network:

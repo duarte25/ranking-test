@@ -3,37 +3,37 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model Usuario {
-  id         String      @id @unique(map: "usuario_id_UNIQUE") @default(uuid()) @db.Uuid
+  id         String      @id @unique(map: "usuario_id_UNIQUE") @default(uuid()) @db.Char(36)
   nome       String      @db.VarChar(100)
   cargo      String      @db.VarChar(100)
-  foto_id    String?     @db.Uuid
+  foto_id    String?     @db.Char(36)
   foto       Imagem?     @relation(fields: [foto_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_foto")
-  pontuacao  Int        @default(0)
+  pontuacao  Int         @default(0)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   pontuacoes Pontuacao[]
 }
 
 model Imagem {
-  id        String    @id @unique(map: "imagem_id_UNIQUE") @default(uuid()) @db.Uuid
+  id        String    @id @unique(map: "imagem_id_UNIQUE") @default(uuid()) @db.Char(36)
   imagem    Bytes
   tipo_mime String    @db.VarChar(20)
-  createdAt DateTime  @default(now())
+  createdAt DateTime  @default(now()) 
   updatedAt DateTime  @updatedAt
   users     Usuario[]
 }
 
 model Pontuacao {
-  id         String   @id @unique(map: "pontuacao_id_UNIQUE") @default(uuid()) @db.Uuid
+  id         String   @id @unique(map: "pontuacao_id_UNIQUE") @default(uuid()) @db.Char(36)
   motivo     String   @db.VarChar(556)
   pontos     Int      @default(0)
-  usuario_id String   @db.Uuid
-  createdAt  DateTime @default(now())
+  usuario_id String   @db.Char(36)
+  createdAt  DateTime @default(now()) 
   updatedAt  DateTime @updatedAt
   usuario    Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
 }
