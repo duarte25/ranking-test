@@ -28,7 +28,7 @@ export default class ScoreController {
     const result = await ScoreService.createScore(user);
 
     // Retornar a resposta com os dados formatados
-    sendResponse(res, 201, result);
+    sendResponse(res, 201, {data: result});
   }
 
   static async findScore(req: Request, res: Response) {

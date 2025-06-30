@@ -38,7 +38,7 @@ export default class UserController {
     const result = await UserService.createUser(user);
 
     // Retornar a resposta com os dados formatados
-    sendResponse(res, 201, result);
+    sendResponse(res, 201, {data: result});
   }
 
   static async findUser(req: Request, res: Response) {
